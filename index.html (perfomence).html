@@ -322,7 +322,7 @@
     }
 
     // Inicializar EmailJS com as chaves fornecidas
-    (function() { emailjs.init("e-ECdPIb-Q5JQPxJn"); })();
+    (function() { emailjs.init("e_ECdPIb_Q5JQPxJn"); })();
 
     document.getElementById('submitQuiz')?.addEventListener('click', function() {
         const email = document.getElementById('userEmail').value.trim();
@@ -331,7 +331,7 @@
         const resultDiv = document.getElementById('quizResult');
         resultDiv.style.display = 'block';
         resultDiv.innerHTML = `<h3>✅ Processing...</h3><p>Sending result to ${email}.</p>`;
-        emailjs.send("service-dwado1f", "template-xn3y9wo", {
+        emailjs.send("service_dwado1f", "template_xn3y9wo", {
             to_email: email,
             pontuacao: score,
             nivel: level,
