@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Augusto & Laurindo | Inglês Online</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,40 +15,42 @@
         header { background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
         .header-flex { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; flex-wrap: wrap; }
         .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #1E3A5F, #2B5A8C); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .logo span { color: #E67E22; background: none; -webkit-background-clip: unset; background-clip: unset; }
-        /* Abas principais */
+        .logo span { color: #E67E22; background: none; }
         .tabs { display: flex; flex-wrap: wrap; gap: 8px; background: white; padding: 8px 0; border-bottom: 1px solid #E2E8F0; }
-        .tab-btn { background: transparent; border: none; padding: 12px 20px; font-size: 1rem; font-weight: 600; font-family: 'Inter', sans-serif; color: #64748B; cursor: pointer; border-radius: 40px; transition: 0.2s; }
+        .tab-btn { background: transparent; border: none; padding: 12px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; border-radius: 40px; transition: 0.2s; }
         .tab-btn:hover { background: #F1F5F9; color: #1E3A5F; }
         .tab-btn.active { background: #1E3A5F; color: white; }
         .tab-content { display: none; padding: 48px 0; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* Cards e componentes */
         .card { background: white; border-radius: 24px; padding: 28px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); transition: transform 0.2s; }
         .card:hover { transform: translateY(-4px); }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; margin-top: 32px; }
         .btn { display: inline-block; background: #E67E22; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; transition: 0.2s; border: none; cursor: pointer; }
         .btn-outline { background: transparent; border: 2px solid #E67E22; color: #E67E22; }
         .btn-outline:hover { background: #E67E22; color: white; }
-        .btn:hover { background: #D35400; transform: scale(1.02); }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        th, td { padding: 14px 12px; border-bottom: 1px solid #E2E8F0; text-align: left; }
+        .btn-secondary { background: #1E3A5F; }
+        .btn-secondary:hover { background: #2B5A8C; }
+        .btn-danger { background: #DC2626; }
+        .btn-danger:hover { background: #B91C1C; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #CBD5E0; border-radius: 16px; margin-bottom: 16px; font-family: inherit; }
+        .alert { padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; }
+        .alert-success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+        .alert-error { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .auth-form, .quiz-form, .admin-panel { background: white; padding: 32px; border-radius: 32px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); margin-bottom: 32px; }
+        .form-toggle { text-align: center; margin-top: 20px; }
+        .form-toggle a { color: #E67E22; cursor: pointer; font-weight: 600; }
+        .whatsapp-float { position: fixed; bottom: 24px; right: 24px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: 0.2s; z-index: 99; }
+        .whatsapp-float:hover { transform: scale(1.05); background: #128C7E; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 20px; overflow: auto; display: block; }
+        th, td { padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: left; }
         th { background: #1E3A5F; color: white; }
-        .faq-item { background: white; margin-bottom: 12px; border-radius: 20px; padding: 16px 20px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; }
+        .faq-item { background: white; margin-bottom: 12px; border-radius: 20px; padding: 16px 20px; cursor: pointer; border: 1px solid #E2E8F0; }
         .faq-question { font-weight: 700; display: flex; justify-content: space-between; }
         .faq-answer { display: none; margin-top: 12px; color: #475569; }
         .faq-item.active .faq-answer { display: block; }
-        .quiz-form { background: white; padding: 32px; border-radius: 32px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
-        .quiz-question { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E2E8F0; }
-        .quiz-question p { font-weight: 700; margin-bottom: 12px; }
-        label { margin-right: 24px; cursor: pointer; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #CBD5E0; border-radius: 16px; font-family: inherit; }
-        .result-box { background: #F1F5F9; padding: 20px; border-radius: 20px; margin-top: 24px; text-align: center; }
-        footer { background: #0F172A; color: #94A3B8; text-align: center; padding: 32px 0; margin-top: 40px; }
-        .whatsapp-float { position: fixed; bottom: 24px; right: 24px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: 0.2s; z-index: 99; }
-        .whatsapp-float:hover { transform: scale(1.05); background: #128C7E; }
-        @media (max-width: 768px) { .tabs { justify-content: center; } .tab-btn { padding: 8px 16px; font-size: 0.9rem; } .grid-3 { grid-template-columns: 1fr; } }
+        .student-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 20px; color: #1E3A5F; }
+        @media (max-width: 768px) { .tabs { justify-content: center; } .tab-btn { padding: 8px 16px; font-size: 0.9rem; } }
     </style>
 </head>
 <body>
@@ -68,17 +68,19 @@
             <button class="tab-btn" data-tab="test">📝 Level Test</button>
             <button class="tab-btn" data-tab="contact">📞 Contact</button>
             <button class="tab-btn" data-tab="alunos">🔒 Alunos</button>
+            <button class="tab-btn" data-tab="admin">👑 Admin</button>
         </div>
     </div>
 </header>
 
 <main class="container">
-    <!-- ======================= ABA HOME ======================= -->
+    <!-- HOME -->
     <div id="home" class="tab-content active">
         <div style="text-align: center; padding: 40px 0;">
             <h1 style="font-size: 2.8rem; color: #1E3A5F;">Speak English with Confidence</h1>
             <p style="font-size: 1.2rem; margin: 16px auto; max-width: 700px;">Live classes with medical student teachers. Real conversation method. First month <strong>only 500 MZN</strong>.</p>
             <a href="#" class="btn" id="goToTestBtn">🚀 Take Free Level Test</a>
+            <a href="#" class="btn btn-secondary" id="goToSignupBtn" style="margin-left: 12px;">📝 Create Account</a>
         </div>
         <div class="grid-3">
             <div class="card"><i class="fas fa-chalkboard-user" style="font-size: 2rem; color: #E67E22;"></i><h3>Live Daily Classes</h3><p>Mon-Fri, 8-9 PM. Interactive and fun.</p></div>
@@ -87,9 +89,9 @@
         </div>
     </div>
 
-    <!-- ======================= ABA HOW IT WORKS ======================= -->
+    <!-- HOW IT WORKS -->
     <div id="howitworks" class="tab-content">
-        <h2 class="section-title">How It Works</h2>
+        <h2>How It Works</h2>
         <div class="grid-3">
             <div class="card"><i class="fas fa-pen"></i><h3>1. Level Test</h3><p>20 questions online. Receive result by email.</p></div>
             <div class="card"><i class="fas fa-video"></i><h3>2. Live Classes</h3><p>Google Meet, real interaction, small groups.</p></div>
@@ -97,7 +99,7 @@
         </div>
         <div style="margin-top: 40px; overflow-x: auto;">
             <h3>Weekly Schedule (Mozambique time)</h3>
-            <table>
+            <table style="display: table; width: 100%;">
                 <thead><tr><th>Day</th><th>Activity</th></tr></thead>
                 <tbody>
                     <tr><td>Monday</td><td>Beginner live class (8‑9 PM)</td></tr>
@@ -112,7 +114,7 @@
         </div>
     </div>
 
-    <!-- ======================= ABA LEVELS ======================= -->
+    <!-- LEVELS -->
     <div id="levels" class="tab-content">
         <h2>Levels & Content</h2>
         <div class="grid-3">
@@ -122,7 +124,7 @@
         </div>
     </div>
 
-    <!-- ======================= ABA PRICING ======================= -->
+    <!-- PRICING -->
     <div id="pricing" class="tab-content">
         <h2>Pricing & Offers</h2>
         <div style="text-align: center; margin-bottom: 32px;">
@@ -135,7 +137,7 @@
         </div>
         <div style="overflow-x: auto;">
             <h3>Comparison</h3>
-            <table>
+            <table style="display: table; width: 100%;">
                 <thead><tr><th></th><th>Our Course</th><th>Traditional School</th><th>App</th></tr></thead>
                 <tbody>
                     <tr><td>Monthly price</td><td><strong>500 MZN</strong></td><td>2,500‑5,000 MZN</td><td>500‑1,200 MZN</td></tr>
@@ -148,26 +150,22 @@
         </div>
     </div>
 
-    <!-- ======================= ABA TESTE DE NÍVEL ======================= -->
+    <!-- LEVEL TEST (20 perguntas) -->
     <div id="test" class="tab-content">
         <h2>Free Level Test</h2>
         <p>Answer 20 questions. You will receive the result by email.</p>
         <div class="quiz-form">
-            <form id="levelTestForm">
-                <div id="questionsContainer"></div>
-                <div style="margin-top: 32px;">
-                    <label>Your email to receive the result:</label>
-                    <input type="email" id="userEmail" placeholder="you@example.com" required>
-                </div>
-                <div style="margin-top: 24px;">
-                    <button type="button" class="btn" id="submitQuiz">Check & send result</button>
-                </div>
-            </form>
-            <div id="quizResult" class="result-box" style="display: none;"></div>
+            <div id="questionsContainer"></div>
+            <div style="margin-top: 32px;">
+                <label>Your email to receive the result:</label>
+                <input type="email" id="userEmail" placeholder="you@example.com" required>
+            </div>
+            <button type="button" class="btn" id="submitQuiz">Check & send result</button>
+            <div id="quizResult" class="result-box" style="display: none; margin-top: 24px;"></div>
         </div>
     </div>
 
-    <!-- ======================= ABA CONTACTO & FAQ ======================= -->
+    <!-- CONTACT & FAQ -->
     <div id="contact" class="tab-content">
         <h2>Contact & FAQ</h2>
         <div style="margin-bottom: 32px;">
@@ -189,37 +187,86 @@
         </div>
     </div>
 
-    <!-- ======================= ABA ALUNOS (COM LOGIN) ======================= -->
-
+    <!-- ALUNOS -->
     <div id="alunos" class="tab-content">
-        <div id="alunosLoginArea" style="text-align:center; padding: 40px;">
-            <h3>🔐 Acesso para alunos</h3>
-            <p>Digite o e‑mail e a senha que recebeu dos professores.</p>
-            <input type="email" id="loginEmail" placeholder="Seu e‑mail" style="width: 280px; margin: 8px;"><br>
-            <input type="password" id="loginPassword" placeholder="Sua senha" style="width: 280px; margin: 8px;"><br>
-            <button class="btn" id="doLoginBtn">Entrar</button>
-            <div id="loginErrorMsg" style="color:red; margin-top: 12px;"></div>
+        <div id="authArea">
+            <div id="loginFormArea" class="auth-form">
+                <h3>🔐 Login</h3>
+                <div id="loginMessage"></div>
+                <input type="email" id="loginEmail" placeholder="Seu e-mail">
+                <input type="password" id="loginPassword" placeholder="Sua senha">
+                <button class="btn" id="doLoginBtn">Entrar</button>
+                <div class="form-toggle">Não tem conta? <a id="showSignupBtn">Criar conta grátis</a></div>
+            </div>
+            <div id="signupFormArea" class="auth-form" style="display: none;">
+                <h3>📝 Criar Conta</h3>
+                <div id="signupMessage"></div>
+                <input type="text" id="signupName" placeholder="Nome completo">
+                <input type="email" id="signupEmail" placeholder="E-mail">
+                <input type="tel" id="signupPhone" placeholder="WhatsApp (opcional)">
+                <select id="signupLevel">
+                    <option value="beginner">Beginner (A1-A2)</option>
+                    <option value="intermediate">Intermediate (B1-B2)</option>
+                </select>
+                <input type="password" id="signupPassword" placeholder="Senha (mínimo 6 caracteres)">
+                <input type="password" id="signupConfirmPassword" placeholder="Confirmar senha">
+                <button class="btn" id="doSignupBtn">Criar Conta</button>
+                <div class="form-toggle">Já tem conta? <a id="showLoginBtn">Fazer login</a></div>
+            </div>
         </div>
-
         <div id="alunosMateriaisArea" style="display: none;">
+            <div id="studentWelcome" class="student-name"></div>
             <h2>📚 Área do Aluno</h2>
-            <p>Bem‑vindo! Aqui estão os materiais exclusivos.</p>
             <div class="grid-3">
                 <div class="card">
-                    <h3><i class="fas fa-file-pdf"></i> Semana 1 - Routines</h3>
-                    <a href="#" class="btn" target="_blank">📥 PDF Iniciante</a>
-                    <a href="#" class="btn btn-outline" target="_blank">📥 PDF Intermediário</a>
+                    <h3><i class="fas fa-file-pdf"></i> Material da Semana</h3>
+                    <a href="#" class="btn" id="pdfLink" target="_blank">📥 Baixar PDF</a>
                 </div>
                 <div class="card">
-                    <h3><i class="fas fa-headphones"></i> Shadowing Áudio</h3>
-                    <audio controls src="#"></audio>
+                    <h3><i class="fas fa-headphones"></i> Áudio para Prática</h3>
+                    <audio controls id="audioPlayer" style="width:100%"></audio>
                 </div>
                 <div class="card">
-                    <h3><i class="fas fa-image"></i> Imagem da semana</h3>
-                    <img src="#" style="width:100%; border-radius:16px;">
+                    <h3><i class="fas fa-tasks"></i> Quiz Semanal</h3>
+                    <button class="btn" id="weeklyQuizBtn">🎯 Fazer Quiz</button>
                 </div>
             </div>
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Seu Progresso</h3>
+                <div id="progressInfo"></div>
+            </div>
             <button class="btn" id="logoutBtn" style="background:#64748B; margin-top: 32px;">Sair</button>
+        </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="admin" class="tab-content">
+        <div id="adminLoginArea" class="auth-form">
+            <h3>👑 Acesso Administrador</h3>
+            <div id="adminMessage"></div>
+            <input type="email" id="adminEmail" placeholder="E-mail do admin">
+            <input type="password" id="adminPassword" placeholder="Senha do admin">
+            <button class="btn" id="doAdminLoginBtn">Entrar como Admin</button>
+            <p class="form-toggle">Acesso exclusivo para professores.</p>
+        </div>
+        <div id="adminPanelArea" style="display: none;">
+            <div class="admin-panel">
+                <h2>👑 Painel do Administrador</h2>
+                <button class="btn btn-danger" id="adminLogoutBtn" style="margin-bottom: 20px;">Sair do Admin</button>
+                <h3>📊 Alunos Cadastrados</h3>
+                <div id="studentsList" style="overflow-x: auto; margin-bottom: 32px;"></div>
+                <hr style="margin: 32px 0;">
+                <h3>📤 Adicionar/Editar Material</h3>
+                <select id="materialLevel">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                </select>
+                <input type="number" id="materialSemana" placeholder="Número da semana">
+                <input type="text" id="materialPdfUrl" placeholder="URL do PDF">
+                <input type="text" id="materialAudioUrl" placeholder="URL do áudio">
+                <button class="btn" id="addMaterialBtn">Salvar Material</button>
+                <div id="materialMessage"></div>
+            </div>
         </div>
     </div>
 </main>
@@ -236,16 +283,38 @@
 </a>
 
 <script>
-    // ========== 1. SISTEMA DE TABS ==========
+document.addEventListener('DOMContentLoaded', function() {
+    // ========== SUPABASE ==========
+    const SUPABASE_URL = "https://vqxjvniosihsqarjimvb.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_QP4S8U7-LdzB0NEW1sbOXA_uKbndvm2";
+    let supabase;
+    try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log("Supabase OK");
+    } catch(e) {
+        console.error("Erro Supabase", e);
+        alert("Erro ao conectar com Supabase. Verifique console.");
+        return;
+    }
+
+    // ========== EMAILJS (underscores) ==========
+    try {
+        emailjs.init("e_ECdPIb_Q5JQPxJn");
+        console.log("EmailJS OK");
+    } catch(e) {
+        console.error("Erro EmailJS", e);
+    }
+
+    // ========== TABS ==========
     const tabs = document.querySelectorAll('.tab-btn');
     const contents = document.querySelectorAll('.tab-content');
     function activateTab(tabId) {
-        contents.forEach(content => content.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         tabs.forEach(btn => btn.classList.remove('active'));
         document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
-        // Se a aba for "alunos", verificar sessão de login
-        if (tabId === 'alunos') checkAlunosTabSession();
+        if (tabId === 'alunos') checkSession();
+        if (tabId === 'admin') checkAdminSession();
     }
     tabs.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -253,11 +322,11 @@
             activateTab(tabId);
         });
     });
-    // Botões para navegar para o teste
     document.getElementById('goToTestBtn')?.addEventListener('click', (e) => { e.preventDefault(); activateTab('test'); });
     document.getElementById('goToTestFromPricing')?.addEventListener('click', (e) => { e.preventDefault(); activateTab('test'); });
+    document.getElementById('goToSignupBtn')?.addEventListener('click', (e) => { e.preventDefault(); activateTab('alunos'); showSignup(); });
 
-    // ========== 2. TESTE DE NÍVEL (20 perguntas) ==========
+    // ========== TESTE DE NÍVEL ==========
     const questions = [
         { type: "mcq", text: "1. She _______ to work every day.", options: ["go", "goes", "going"], correct: "goes" },
         { type: "mcq", text: "2. I _______ breakfast at 7:00 this morning.", options: ["have", "had", "having"], correct: "had" },
@@ -280,6 +349,7 @@
         { type: "short", text: "19. Describe your daily routine. What do you usually do in the morning? (2‑3 sentences)" },
         { type: "short", text: "20. What do you like to do in your free time? Why? (2‑3 sentences)" }
     ];
+
     function renderQuestions() {
         const container = document.getElementById('questionsContainer');
         if (!container) return;
@@ -303,6 +373,7 @@
             container.appendChild(div);
         });
     }
+
     function evaluateTest() {
         let score = 0;
         for (let i = 0; i <= 17; i++) {
@@ -321,8 +392,7 @@
         return { score, level };
     }
 
-    // Inicializar EmailJS com as chaves fornecidas
-    (function() { emailjs.init("e_ECdPIb_Q5JQPxJn"); })();
+    renderQuestions();
 
     document.getElementById('submitQuiz')?.addEventListener('click', function() {
         const email = document.getElementById('userEmail').value.trim();
@@ -342,68 +412,230 @@
             console.error("EmailJS error:", error);
         });
     });
-    renderQuestions();
 
-    // FAQ accordion
+    // ========== FAQ ==========
     document.querySelectorAll('.faq-item').forEach(item => {
         item.addEventListener('click', () => item.classList.toggle('active'));
     });
 
-    // ========== 3. SISTEMA DE LOGIN DOS ALUNOS (compartilhado com admin.html) ==========
-    const STUDENTS_STORAGE_KEY = "augusto_laurindo_alunos";
-    function getStudentsList() {
-        const stored = localStorage.getItem(STUDENTS_STORAGE_KEY);
-        return stored ? JSON.parse(stored) : [];
-    }
-    function saveStudentSession(email) { sessionStorage.setItem("loggedStudent", email); }
-    function clearStudentSession() { sessionStorage.removeItem("loggedStudent"); }
-    function isStudentLoggedIn() { return sessionStorage.getItem("loggedStudent") !== null; }
-    function performLogin(email, password) {
-        const students = getStudentsList();
-        return students.some(s => s.email === email && s.password === password);
-    }
-    const loginArea = document.getElementById('alunosLoginArea');
+    // ========== ALUNOS (Auth) ==========
+    const authArea = document.getElementById('authArea');
     const materiaisArea = document.getElementById('alunosMateriaisArea');
-    const loginBtn = document.getElementById('doLoginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const loginError = document.getElementById('loginErrorMsg');
-    function showLoginForm() {
-        if (loginArea) loginArea.style.display = 'block';
-        if (materiaisArea) materiaisArea.style.display = 'none';
-        if (loginError) loginError.innerText = '';
+    let currentUser = null;
+
+    async function checkSession() {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            currentUser = user;
+            await loadProfileAndMaterials();
+            showMaterials();
+        } else {
+            currentUser = null;
+            showAuth();
+        }
     }
-    function showMaterials() {
-        if (loginArea) loginArea.style.display = 'none';
-        if (materiaisArea) materiaisArea.style.display = 'block';
-    }
-    function checkAlunosTabSession() {
-        if (isStudentLoggedIn()) showMaterials();
-        else showLoginForm();
-    }
-    if (loginBtn) {
-        loginBtn.addEventListener('click', () => {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-            if (!email || !password) { loginError.innerText = 'Preencha e‑mail e senha.'; return; }
-            if (performLogin(email, password)) {
-                saveStudentSession(email);
-                showMaterials();
-                loginError.innerText = '';
-                document.getElementById('loginEmail').value = '';
-                document.getElementById('loginPassword').value = '';
-            } else {
-                loginError.innerText = 'E‑mail ou senha incorretos.';
+
+    async function loadProfileAndMaterials() {
+        const { data: profile, error } = await supabase
+            .from('alunos')
+            .select('*')
+            .eq('id', currentUser.id)
+            .single();
+        if (error) {
+            console.error("Erro ao carregar perfil:", error);
+            return;
+        }
+        if (profile) {
+            document.getElementById('studentWelcome').innerHTML = `👋 Olá, ${profile.name}!`;
+            const { data: prog } = await supabase
+                .from('user_progress')
+                .select('puzzle_score, puzzle_index')
+                .eq('user_id', currentUser.id)
+                .maybeSingle();
+            let progressPercent = prog ? (prog.puzzle_score % 100) : 0;
+            document.getElementById('progressInfo').innerHTML = `
+                <p>📊 Nível: ${profile.level === 'beginner' ? 'Beginner (A1-A2)' : 'Intermediate (B1-B2)'}</p>
+                <p>✅ Aulas completadas: ${profile.completed_lessons || 0}</p>
+                <p>🎯 Progresso: ${progressPercent}%</p>
+                <div style="background:#E2E8F0; border-radius:20px; height:8px; margin-top:10px;">
+                    <div style="background:#E67E22; width:${progressPercent}%; height:8px; border-radius:20px;"></div>
+                </div>
+            `;
+            const { data: material } = await supabase
+                .from('materiais')
+                .select('*')
+                .eq('level', profile.level)
+                .order('semana', { ascending: true })
+                .limit(1);
+            if (material && material[0]) {
+                document.getElementById('pdfLink').href = material[0].pdf_url || '#';
+                document.getElementById('audioPlayer').src = material[0].audio_url || '';
             }
-        });
+        }
     }
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            clearStudentSession();
-            showLoginForm();
-        });
+
+    function showMaterials() {
+        authArea.style.display = 'none';
+        materiaisArea.style.display = 'block';
     }
-    // Inicializar estado da aba (se já estiver ativa no carregamento)
-    if (document.getElementById('alunos').classList.contains('active')) checkAlunosTabSession();
+    function showAuth() {
+        authArea.style.display = 'block';
+        materiaisArea.style.display = 'none';
+        showLogin();
+    }
+    function showLogin() {
+        document.getElementById('loginFormArea').style.display = 'block';
+        document.getElementById('signupFormArea').style.display = 'none';
+        document.getElementById('loginMessage').innerHTML = '';
+    }
+    function showSignup() {
+        document.getElementById('loginFormArea').style.display = 'none';
+        document.getElementById('signupFormArea').style.display = 'block';
+        document.getElementById('signupMessage').innerHTML = '';
+    }
+
+    document.getElementById('doSignupBtn')?.addEventListener('click', async () => {
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const phone = document.getElementById('signupPhone').value.trim();
+        const level = document.getElementById('signupLevel').value;
+        const password = document.getElementById('signupPassword').value;
+        const confirm = document.getElementById('signupConfirmPassword').value;
+        const msgDiv = document.getElementById('signupMessage');
+        if (!name || !email || !password) {
+            msgDiv.innerHTML = '<div class="alert alert-error">Preencha nome, e-mail e senha.</div>';
+            return;
+        }
+        if (password !== confirm) {
+            msgDiv.innerHTML = '<div class="alert alert-error">As senhas não coincidem.</div>';
+            return;
+        }
+        if (password.length < 6) {
+            msgDiv.innerHTML = '<div class="alert alert-error">A senha deve ter pelo menos 6 caracteres.</div>';
+            return;
+        }
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+            msgDiv.innerHTML = `<div class="alert alert-error">Erro: ${error.message}</div>`;
+            return;
+        }
+        if (data.user) {
+            await supabase.from('alunos').insert([{
+                id: data.user.id,
+                name: name,
+                phone: phone || null,
+                level: level,
+                progress_total: 0,
+                completed_lessons: 0
+            }]);
+            await supabase.from('user_progress').insert([{
+                user_id: data.user.id,
+                puzzle_score: 0,
+                puzzle_index: 0
+            }]);
+            msgDiv.innerHTML = '<div class="alert alert-success">✅ Conta criada! Faça login.</div>';
+            setTimeout(() => showLogin(), 2000);
+        }
+    });
+
+    document.getElementById('doLoginBtn')?.addEventListener('click', async () => {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const msgDiv = document.getElementById('loginMessage');
+        if (!email || !password) {
+            msgDiv.innerHTML = '<div class="alert alert-error">Preencha e-mail e senha.</div>';
+            return;
+        }
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+            msgDiv.innerHTML = `<div class="alert alert-error">${error.message}</div>`;
+            return;
+        }
+        await checkSession();
+    });
+
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        currentUser = null;
+        showAuth();
+    });
+
+    document.getElementById('weeklyQuizBtn')?.addEventListener('click', () => {
+        alert('📝 Quiz semanal em breve! Fique atento no WhatsApp.');
+    });
+
+    // ========== ADMIN ==========
+    const ADMIN_EMAIL_FIXO = "augustojunior116@gmail.com";
+    const ADMIN_PASSWORD_FIXO = "admin123";
+    const adminLoginDiv = document.getElementById('adminLoginArea');
+    const adminPanelDiv = document.getElementById('adminPanelArea');
+    function showAdminLogin() { adminLoginDiv.style.display = 'block'; adminPanelDiv.style.display = 'none'; }
+    function showAdminPanel() { adminLoginDiv.style.display = 'none'; adminPanelDiv.style.display = 'block'; loadAllStudents(); }
+    function checkAdminSession() {
+        const isAdmin = sessionStorage.getItem('adminLogged');
+        if (isAdmin === 'true') showAdminPanel();
+        else showAdminLogin();
+    }
+    document.getElementById('doAdminLoginBtn')?.addEventListener('click', () => {
+        const email = document.getElementById('adminEmail').value.trim();
+        const pass = document.getElementById('adminPassword').value.trim();
+        if (email === ADMIN_EMAIL_FIXO && pass === ADMIN_PASSWORD_FIXO) {
+            sessionStorage.setItem('adminLogged', 'true');
+            showAdminPanel();
+        } else {
+            document.getElementById('adminMessage').innerHTML = '<div class="alert alert-error">Credenciais inválidas.</div>';
+        }
+    });
+    document.getElementById('adminLogoutBtn')?.addEventListener('click', () => {
+        sessionStorage.removeItem('adminLogged');
+        showAdminLogin();
+    });
+    async function loadAllStudents() {
+        const { data, error } = await supabase.from('alunos').select('*').order('id');
+        if (error) {
+            document.getElementById('studentsList').innerHTML = '<p>Erro ao carregar alunos.</p>';
+            return;
+        }
+        let html = '<table style="display: table; width:100%;"><thead><tr><th>Nome</th><th>Nível</th><th>Progresso</th><th>Ações</th></tr></thead><tbody>';
+        data.forEach(aluno => {
+            html += `<tr>
+                        <td>${aluno.name}</td>
+                        <td>${aluno.level}</td>
+                        <td>${aluno.progress_total || 0}%</td>
+                        <td><button class="btn-outline" onclick="window.deleteStudent('${aluno.id}')">Excluir</button></td>
+                    </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('studentsList').innerHTML = html;
+    }
+    window.deleteStudent = async (id) => {
+        if (confirm('Excluir este aluno?')) {
+            await supabase.from('alunos').delete().eq('id', id);
+            loadAllStudents();
+        }
+    };
+    document.getElementById('addMaterialBtn')?.addEventListener('click', async () => {
+        const level = document.getElementById('materialLevel').value;
+        const semana = parseInt(document.getElementById('materialSemana').value);
+        const pdf_url = document.getElementById('materialPdfUrl').value.trim();
+        const audio_url = document.getElementById('materialAudioUrl').value.trim();
+        const msgDiv = document.getElementById('materialMessage');
+        if (!pdf_url && !audio_url) {
+            msgDiv.innerHTML = '<div class="alert alert-error">Forneça pelo menos uma URL.</div>';
+            return;
+        }
+        const { error } = await supabase.from('materiais').insert([{ level, semana, pdf_url, audio_url }]);
+        if (error) msgDiv.innerHTML = `<div class="alert alert-error">Erro: ${error.message}</div>`;
+        else msgDiv.innerHTML = '<div class="alert alert-success">Material salvo!</div>';
+    });
+
+    // Inicializa estado das abas se já estiverem ativas
+    if (document.getElementById('alunos').classList.contains('active')) checkSession();
+    if (document.getElementById('admin').classList.contains('active')) checkAdminSession();
+
+    document.getElementById('showSignupBtn')?.addEventListener('click', showSignup);
+    document.getElementById('showLoginBtn')?.addEventListener('click', showLogin);
+});
 </script>
 </body>
 </html>
